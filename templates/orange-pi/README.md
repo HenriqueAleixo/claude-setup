@@ -26,23 +26,26 @@ Servidor caseiro do Lucas / TrueIoT, onde rodam aplicações pessoais e de produ
 - Swap: 8 GB
 
 ## Stacks já em produção (NÃO derrubar)
-- `global-nginx` — reverse proxy compartilhado (escuta 80/443)
+- `global-nginx` — reverse proxy compartilhado (escuta 80/443/8443/9443)
 - `nextcloud` + `nextcloud-db` (postgres:16-alpine) — Nextcloud pessoal
-- `ccradar-backend` (8000) + `ccradar-frontend` (3000) — radar de e-mails
-- `ml_curto` (postgres + redis + backend + nginx) — projeto ML Curto
-- `sirbcc-app` — aplicação SIRBCC
-- `calculadora-api` — calculadora interna
+- `ccradar` — `ccradar-backend` + `ccradar-frontend` + `ccradar-email-agent` + `ccradar-proposal-agent` — radar de e-mails (atrás do nginx)
+- `ml_curto` — `ml_curto-backend-1` + `ml_curto-db-1` (5432) + `ml_curto-redis-1` (6379) + `mlcurto-nginx` + `adminer-mlcurto` (8090) — projeto ML Curto
+- `wapp-bau` — `jose` (bot, `192.168.15.200:9001`) + `panel-api` + `panel-front` + `bau-evolution` (8092) + `bau-postgres` + `bau-redis` — automação WhatsApp
+- `kdl` — `kdl-backend` + `kdl-postgres` (`127.0.0.1:5433`) + `kdl-adminer` (8096) — stack de terceiro (imagem `ghcr.io/hesleylira/kdl-backend`), subiu 2026-06-05
+- `sirbcc-app` (3000) — aplicação SIRBCC
+- `calculadora-api` (8001) — calculadora interna
 - `mcp-nano-banana` — servidor MCP
+- `watchtower-orange` — auto-update label-scoped de todos os projetos (ver memória própria)
 - Portainer (`9443`) — UI de gestão de containers
 
 ## Portas já ocupadas no host
-`22, 80, 111, 443, 3000, 5432, 5555, 6379, 8000, 8001, 8443, 8888, 9443, 27017`
+`22, 80, 111, 443, 3000, 5432, 5433, 5555, 6379, 8000, 8001, 8090, 8092, 8096, 8443, 8888, 9001, 9443, 27017`
 
 → Antes de subir um serviço novo, escolher porta fora dessa lista.
 
 ## Portas livres recomendadas para novos serviços
-- HTTP de novos apps: `8090-8099`
-- Postgres adicional: `5433+`
+- HTTP de novos apps: `8091, 8093-8095, 8097-8099` (8090/8092/8096 já tomados)
+- Postgres adicional: `5434+`
 - Redis adicional: `6380+`
 - **Preferência**: não expor portas no host. Usar docker network interna e expor publicamente
   apenas via reverse proxy do container `global-nginx`.
