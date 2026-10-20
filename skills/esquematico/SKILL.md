@@ -30,22 +30,53 @@ Kit: `~/Documentos/projetos/kicad-ia-tools/` (leia o `README.md`: `schlib.py`/`d
 - Depois de gerar: `kicad-cli sch erc` (zero erro; aviso de tipo de pino das LCSC é aceitável), PDF em
   `output/esquematico.pdf`, render das folhas mexidas (`pdftoppm`) e **olhe a imagem** antes de dizer que está
   pronto. Compare a netlist com a versão anterior sempre que mexer em layout de folha. Commit.
+- (18/10/2026, Ecosnap) Reorganização só visual = **netlist idêntica**: `net_compare.py antes.xml depois.xml`
+  (kit) tem que dizer "idêntica" (peças, valores e partição de pinos), com ERC 0. Mantenha a orientação dos
+  passivos (pino 1/2 na mesma rede de antes) para não trocar pad na PCB. Fio que passa por um ponto de pino/label
+  vira ligação no gerador: o diff de netlist é o que pega esse curto.
+- (18/10) **Nada sobreposto**: `check_overlap.py` (kit) com 0 em toda folha gerada — símbolo × símbolo,
+  texto (ref, valor, label, nota, título) × texto/símbolo/fio/borda de bloco, fio × símbolo, nada no carimbo — e
+  depois o render folha por folha. Mande o render para ele **aprovar** antes de fechar.
+- (18/10) Ele edita à mão no Eeschema: antes de regenerar, `diff_manual.py git:HEAD kicad` (kit) levanta o que ele
+  mexeu; tudo vira regra/coordenada no gerador (padrão repetível vale para todos os canais) e nada se perde.
 - Pendência de datasheet fica `[CONFIRMAR]` no README até ser verificada.
 - Estudos para artigo (BreakoutC3, MedidorEnergia, ControladorVentilador): pipeline por script + `docs/LOG.md`
   com o prompt dele verbatim, tempo e custo, commit por iteração.
 
+- (20/10) Ligação entre peças por `connect(sh, (inst, "pino"), ...)` do kit (roteador por nome de pino) em vez de
+  `wire` com coordenada chutada. Nó apertado (3 pinos a 2,54 mm, VDD/VSS colados) sai melhor à mão com `wire`.
+  Sem caminho = mudar a peça de lugar, nunca trocar por label.
+
+## 2b. Padrões de desenho por tipo de bloco
+Antes de desenhar um bloco, veja se existe `padroes/<tipo>.md` nesta pasta (hoje: `amp-op.md`) e siga. Padrão
+novo nasce de 2–3 referências (application circuit do datasheet, app note TI/ADI/LT, esquemático aberto SparkFun)
+— só o arranjo; a conectividade vem do script e do `net_compare`. Um arquivo por tipo, curto; aqui só esta linha.
+
 ## 3. Estrutura
 - Hierárquico: uma folha por módulo funcional; referências por centena por folha (FONTE 1xx, DI 2xx…).
 - Placas empilhadas no mesmo projeto: folhas por placa + folha de interligação, pinagem idêntica dos dois lados.
+  (18/10) Se as placas estão no MESMO `.kicad_pcb`, cada placa tem nome de rede próprio (sufixo, ex. `_C` na
+  controle), gerado da tabela única do header — senão o ratsnest liga uma placa na outra. GND_C/VSYS_C viram power
+  próprio com PWR_FLAG; o header é a única ligação.
 - Folhas **compactas** (A4/A3, sem terço vazio). "Mais espaço" é dentro do bloco, não entre blocos. Bloco com
-  título curto; a conta vai numa nota de cálculo (linhas ≤ ~75 caracteres).
+  título curto; a conta vai numa nota de cálculo (linhas ≤ ~75 caracteres). (18/10) Blocos encostados, fios
+  curtos e a **menor folha que couber legível** (A4 antes de A3); bloco e texto fora do carimbo.
 
 ## 4. Estilo visual (obrigatório)
+- (20/10) Valor do resistor **sem tolerância** (`200kΩ`, não `200k 0,1%`): a precisão vem da peça (LCSC/MPN).
 - Textos 30 mil, referência em **negrito**; número/nome de pino só em CI, transistor, MOSFET, opto, relé e
   conector; valor do resistor dentro do corpo; posições padronizadas (o `draw.py` já faz).
 - **Passivo sempre ligado por fio** ao nó a que pertence (RC, divisor, pull-up, gate, série, realimentação,
   bootstrap). Nada de peça solta ligada por label — "parece netlist". Label só entre CIs distantes ou entre folhas.
-- Desacoplamento em grupo, pendurado num trilho curto com o símbolo de alimentação. PWR_FLAG nas saídas de regulador.
+  (16/10, TCA9535: "não tem por que os resistores ficarem soltos") Pull-up/pull-down/LED de expansor ou MCU: no pino,
+  em leque (`fan` do kit) — o label fica num toco abaixo da linha, porque fio atravessando a caixa de label global
+  risca o texto. Proteção de entrada (BAT54S, TVS) também por fio no nó (AIN1 redesenhado por ele em 16/10).
+- (16/10, AOUT: "dificulta demais") **Desacoplamento sempre no pino de alimentação do CI, por fio**, com o GND logo
+  abaixo, um por pino (`decap_pin` do kit); nunca grupo separado ligado por label/power. CI com os pinos de
+  alimentação no meio das fileiras de sinal → símbolo de projeto com a alimentação de um lado (W5500 do Ecosnap).
+  PWR_FLAG nas saídas de regulador.
+- (18/10) **Fluxo da esquerda para a direita**: borne/entrada → proteção → CI → lado lógico/saída (espelhe o CI se
+  precisar). Texto nenhum sobreposto (ref, valor, label).
 - Símbolo da LCSC que obriga a cruzar fio → símbolo de projeto com a mesma numeração (`custom_syms`).
 - Canais repetidos com passo folgado (ex. entradas digitais: 25,4 mm entre canais).
 
