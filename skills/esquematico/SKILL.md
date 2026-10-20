@@ -13,7 +13,10 @@ Kit: `~/Documentos/projetos/kicad-ia-tools/` (leia o `README.md`: `schlib.py`/`d
 (`gen_sch.py` + `sh_*.py` + README).
 
 ## 1. Antes de mexer
-- Projeto novo vai em `~/Documentos/projetos/<nome>/kicad/` (nunca na home). `git init`, commit por folha.
+- **Projeto novo:** `/usr/bin/python3 ~/Documentos/projetos/kicad-ia-tools/novo_projeto.py <nome> "<título>" [--placas a,b]`
+  — cria `~/Documentos/projetos/<nome>/` com o kit atual em `scripts/`, `kicad/`, CLAUDE.md, docs/LOG.md, folha de
+  exemplo, ERC e o primeiro commit. Nunca montar à mão nem copiar `scripts/` de outro projeto (as cópias divergem).
+  Commit por folha.
 - **Eeschema FECHADO sem salvar** (`pgrep -a eeschema`). Se estiver aberto, peça para ele fechar *sem salvar* e
   espere. Nunca mate o processo. Motivo: o Eeschema guarda a versão velha em memória; em 29/09 o F8 usou ela e o
   "salvar tudo" sobrescreveu a pinagem nova do ESP32 do medidor.

@@ -1,6 +1,6 @@
 ---
 name: init-project
-description: "Bootstrapa um projeto novo replicando o padrão do cc-radar. Detecta tipo (ESP32/Flutter/Systems full-stack/Backend/Frontend), aplica template correspondente com scaffold completo, cria CLAUDE.md com @import do perfil certo, inicializa git. Triggers: novo projeto, criar projeto, bootstrap projeto, iniciar projeto, scaffold projeto, começar projeto, init projeto."
+description: "Bootstrapa um projeto novo replicando o padrão do cc-radar. Detecta tipo (ESP32/Flutter/Systems full-stack/Backend/Frontend/Placa KiCad), aplica template correspondente com scaffold completo, cria CLAUDE.md com @import do perfil certo, inicializa git. Triggers: novo projeto, criar projeto, bootstrap projeto, iniciar projeto, scaffold projeto, começar projeto, init projeto."
 user-invocable: true
 ---
 
@@ -55,7 +55,17 @@ D. Só backend (FastAPI + PostgreSQL)
 E. Só frontend (React + Vite + TypeScript)
    Perfis: frontend-web.md
    Template: templates/systems/frontend/
+
+F. Placa KiCad (esquemático por script + PCB)
+   Skills: /esquematico e /pcb
+   Gerador: ~/Documentos/projetos/kicad-ia-tools/novo_projeto.py
 ```
+
+**Se for F (placa KiCad):** pule os passos 3–7 deste fluxo. Pergunte só o nome (kebab-case), o título e as placas
+(uma, ou várias empilhadas no mesmo .kicad_pcb, ex. `io,controle`) e rode
+`/usr/bin/python3 ~/Documentos/projetos/kicad-ia-tools/novo_projeto.py <nome> "<título>" [--placas a,b]`. Ele cria
+`~/Documentos/projetos/<nome>/` (scripts/ com o kit atual, kicad/, docs/LOG.md, CLAUDE.md), gera a folha de exemplo,
+roda ERC e check_overlap e faz o primeiro commit. Depois disso, siga a skill /esquematico.
 
 ### Passo 2 — Coletar metadados do projeto
 
