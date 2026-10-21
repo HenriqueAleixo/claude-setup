@@ -12,7 +12,7 @@ Ler no começo de toda sessão de placa (Fase 0).
 | `pcb_add_tracks_bulk` | camada como `F_Cu`/`B_Cu`/`In2_Cu`; rede pelo nome exato (com `·` e `/`) | lotes de ≤ 100 trilhas |
 | `pcb_get_tracks` | o `id` sai **abreviado** (`7211d9dd...`) e o `pcb_delete_items` exige o UUID inteiro | pegar o UUID completo no `.kicad_pcb` salvo pelo prefixo (`grep`), depois de conferir que aberto = salvo (contagem de trilhas no `pcb_get_board_summary`) |
 | várias chamadas MCP em paralelo | algumas caem em "file-backed fallback: no PCB open" e devolvem vazio | consultas de placa uma de cada vez (ou repetir a que voltou vazia) |
-| `run_drc` | resposta de ~900 kB (estoura); o relatório vai para `output/drc_report.json` | comparar o json com o da base **por rede** (descrição muda com o comprimento da trilha): violação nova = 0 e nenhuma rede com mais ligação faltando |
+| `run_drc` | resposta de ~900 kB (estoura); o relatório vai para `output/drc_report.json`. **Roda sobre o arquivo SALVO**: sem `pcb_refill_zones` + `pcb_save` antes, ele vê trilha nova com preenchimento velho (isolamento falso com a malha) ou nem vê o último lote | comparar o json com o da base **por rede** (descrição muda com o comprimento da trilha): violação nova = 0 e nenhuma rede com mais ligação faltando |
 | qualquer mudança | o preenchimento das zonas fica velho → DRC mostra dezenas de "clearance" falsos com GND | `pcb_refill_zones` + `pcb_save` antes de todo DRC |
 | `pcb_place_decoupling_caps` e afins | gravam arquivo e pedem reload | não usar com a placa aberta |
 

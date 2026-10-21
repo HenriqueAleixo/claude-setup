@@ -60,10 +60,21 @@
 meio do pad"): toda trilha começa/termina no **centro do pad** e sai pelo eixo dele; a curva vem depois de sair do
 pad. Nunca encostar a trilha na lateral nem na ponta do pad (oblongo de borne, 0402, SOT, TSSOP). Trilha que corre
 fora do eixo do pad entra com **desvio de 45° + 45°** (reta → diagonal até o eixo → reta até o centro, com ≥ 0,5 mm
-reto antes do pad), não com canto em L. Conferir: `centro_pad.py` (ponta = centro ± 0,01 mm).
-Correção em placa já roteada: `centro_pad_plano.py` (só lê; aplicação pelo MCP). Automático só o que é seguro —
-ponta no eixo (± 0,005 mm) que só estica até o centro; desvio que daria segmento < 0,2 mm ou fora de 0/45/90°, toco
-curto antes de curva e trilha inteira dentro do pad são **manuais** (nunca apagar trilha sem repor).
+reto antes do pad), não com canto em L. Conferir: `centro_pad.py` (0 pontas).
+- **Tolerância 0,1 mm** (decisão minha, 20/10): abaixo disso o desalinhamento é invisível e corrigir obriga um "dente"
+  de < 0,15 mm ou mover peça (o move do MCP apaga o 3D). Acima de 0,1 mm, centro sempre.
+- Trilha que chega ao centro por um toco **dentro do próprio pad** já está certa.
+- **Pad de potência/térmico** com os dois lados ≥ 1,5 mm (indutor, pad exposto, aba de MOSFET, suporte de bateria):
+  a trilha entra pela borda mais próxima — ir ao meio do cobre não muda nada.
+- **Desvio em S** (curvas opostas) pode ter diagonal ≥ 0,1 mm; os ≥ 0,5 mm entre curvas valem para curvas no mesmo
+  sentido (90° disfarçado). `cantos.py` já segue isso.
+- Pino de passo fino (0,5 mm, pad 0,3): a trilha de alimentação larga entra com o **último trecho em 0,2 mm** até o
+  centro, senão a ponta encosta no pino vizinho (U501, Ecosnap).
+- Barramento ligando pinos vizinhos do mesmo sinal (ex. COM_D de opto quádruplo): linha paralela fora da fileira e
+  cada pino sobe reto do centro até ela; nada de ponte de canto a canto entre pads.
+Correção em placa já roteada: `centro_pad_plano.py` (só lê o salvo; checa isolamento, ângulos e curvas; gera lote por
+folha) → `teste_copia.py` de cada lote **e do conjunto** → MCP. O que ele não resolve se desenha à mão por padrão de
+canal (Q80x, pente de pull-ups, opto) com `teste_copia` antes. Nunca apagar trilha sem repor.
 
 **Ângulos**: só 0/45/90; **nenhum canto de 90°** e nenhum "90° disfarçado" (duas curvas de 45° coladas) — entre duas
 curvas, ≥ 0,5 mm reto. Curva dentro do pad não conta.
