@@ -9,6 +9,7 @@ Ler no começo de toda sessão de placa (Fase 0).
 | `pcb_add_zone` | cantos com `x_mm`/`y_mm` | — |
 | `pcb_delete_items` | sempre responde "postcondition verification could not complete", mas apaga | confira lendo a placa |
 | `pcb_move_footprint` | dentro de `pcb_begin_commit`/`pcb_push_commit` acusa "rotation verification failed" em peça girada, mas aplica certo; **apaga o modelo 3D** da peça movida | confira posição por leitura; no fim, `add3d.py` com o pcbnew fechado (combinar com ele) |
+| `pcb_move_component` | igual ao move_footprint: **apaga o modelo 3D** (verificado 20/10) | idem: no fim, "Atualizar footprints da biblioteca" só nas peças movidas, ou `add3d.py` com o pcbnew fechado |
 | `pcb_add_tracks_bulk` | camada como `F_Cu`/`B_Cu`/`In2_Cu`; rede pelo nome exato (com `·` e `/`) | lotes de ≤ 100 trilhas |
 | `pcb_get_tracks` | o `id` sai **abreviado** (`7211d9dd...`) e o `pcb_delete_items` exige o UUID inteiro | pegar o UUID completo no `.kicad_pcb` salvo pelo prefixo (`grep`), depois de conferir que aberto = salvo (contagem de trilhas no `pcb_get_board_summary`) |
 | várias chamadas MCP em paralelo | algumas caem em "file-backed fallback: no PCB open" e devolvem vazio | consultas de placa uma de cada vez (ou repetir a que voltou vazia) |

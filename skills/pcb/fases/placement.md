@@ -9,6 +9,11 @@
 - **Pense na saída do pad já no placement**: passivo ligado a um pino fica **no eixo do pino** sempre que der, para a
   trilha sair do centro de um e entrar reta no centro do outro (regra do centro do pad, `roteamento.md`). Peça fora
   do eixo obriga o desvio de 45° + 45°; se o desvio ficaria com < 0,5 mm reto antes do pad, mova a peça.
+- **Canais repetidos sob CI de passo fino** (20/10, U702/U703 do Ecosnap: "alinha o bloco"): cada passivo no **eixo
+  do seu pino** (passo do CI, ex. 1,27), nunca num passo próprio (3,0 mm acumulava desvio a cada canal). Se o
+  courtyard não cabe lado a lado, **em degrau**: uma fileira (R) logo abaixo dos pinos e a outra (D) descendo até
+  encostar no courtyard da primeira; o que vem depois (C) abaixo do pad do seu D. Os dois CIs iguais com a mesma
+  altura de fileiras. Resultado: toda ligação vira reta vertical, sem desvio.
 - Mostre o bloco (imagem com 3D quando ele pedir) e liste o que ficou fora do limite de satélite.
 
 **Satélites** (passivo ligado a pino de CI fica do mesmo lado do pino, na ordem do sinal; distância pad↔pino):
