@@ -1,0 +1,308 @@
+<title>Mapa do orangepi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg:#f2f4f7; --panel:#ffffff; --ink:#18212d; --mute:#66717f; --line:#cdd4dd;
+  --accent:#e0672b; --accent-ink:#8f3d12; --bad:#c0392b; --warn:#b7791f; --ok:#2e8b57;
+  --net:#e9eef5; --zone:#f7f8fa; --stack:#fbfbfc;
+  --sans:"IBM Plex Sans",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  color-scheme:dark; --bg:#0f151c; --panel:#161e27; --ink:#e6eaf0; --mute:#97a3b1; --line:#334252;
+  --accent:#f0813f; --accent-ink:#ffb27a; --bad:#ef6a5b; --warn:#e0a53a; --ok:#5fc48c;
+  --net:#1b2733; --zone:#131a22; --stack:#131a22; } }
+:root[data-theme="dark"] {
+  color-scheme:dark; --bg:#0f151c; --panel:#161e27; --ink:#e6eaf0; --mute:#97a3b1; --line:#334252;
+  --accent:#f0813f; --accent-ink:#ffb27a; --bad:#ef6a5b; --warn:#e0a53a; --ok:#5fc48c;
+  --net:#1b2733; --zone:#131a22; --stack:#131a22; }
+body { background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5; margin:0; padding-block:28px 48px; padding-inline:clamp(16px,3vw,40px); }
+main { max-width:1400px; margin:0 auto; display:grid; gap:28px; }
+h1 { font-size:clamp(24px,3vw,34px); font-weight:600; margin:0; letter-spacing:-0.01em; text-wrap:balance; }
+h2 { font-size:18px; font-weight:600; margin:0 0 10px; }
+p { margin:0; max-width:70ch; }
+.lead { color:var(--mute); }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.chip { font-family:var(--mono); font-size:12px; padding:4px 10px; border:1px solid var(--line); border-radius:999px; background:var(--panel); }
+.chip b { font-weight:600; color:var(--accent-ink); }
+figure { margin:0; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; overflow-x:auto; }
+figure svg { width:100%; min-width:1100px; height:auto; display:block; font-family:var(--mono); color:var(--ink); }
+figcaption { font-size:13px; color:var(--mute); margin-top:10px; max-width:none; }
+svg .zone { fill:var(--zone); stroke:var(--line); }
+svg .net { fill:var(--net); stroke:var(--line); }
+svg .stack { fill:var(--stack); stroke:var(--line); }
+svg .node { fill:var(--panel); stroke:var(--ink); stroke-width:1; }
+svg .edge-node { fill:var(--panel); stroke:var(--accent); stroke-width:1.5; }
+svg .pill { fill:var(--panel); stroke:var(--accent); stroke-width:1; }
+svg .host { fill:var(--panel); stroke:var(--mute); stroke-dasharray:3 2; }
+svg .ghost { fill:none; stroke:var(--mute); stroke-dasharray:3 2; }
+svg .warn { fill:var(--panel); stroke:var(--warn); stroke-width:1.5; }
+svg .bad { fill:var(--panel); stroke:var(--bad); stroke-width:1.5; }
+svg .lbl { font-size:10.8px; fill:var(--ink); }
+svg .sub { font-size:10px; fill:var(--mute); }
+svg .cap { font-size:10px; fill:var(--mute); font-family:var(--sans); }
+svg .zone-t, svg .net-t, svg .stack-t { font-size:11.5px; font-weight:600; fill:var(--ink); font-family:var(--sans); text-transform:uppercase; letter-spacing:.04em; }
+svg .stack-t { text-transform:none; letter-spacing:0; }
+svg .wt { fill:var(--accent); } svg .wt-l { fill:var(--accent); font-size:12px; }
+svg .edge { fill:none; stroke:var(--ink); stroke-width:1.2; color:var(--ink); }
+svg .edge.hot { stroke:var(--accent); color:var(--accent); stroke-width:1.6; }
+svg .edge.faint { stroke:var(--mute); stroke-width:1; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+.card h3 { margin:0 0 6px; font-size:14px; font-family:var(--mono); font-weight:600; }
+.card p { font-size:13.5px; color:var(--mute); }
+.card ul { margin:8px 0 0; padding-left:18px; font-size:13.5px; }
+.card li { margin:2px 0; }
+code { font-family:var(--mono); font-size:12.5px; background:var(--net); padding:1px 5px; border-radius:4px; }
+table { border-collapse:collapse; width:100%; font-size:13.5px; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+th,td { text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--mute); font-weight:600; }
+tr:last-child td { border-bottom:0; }
+td.port { font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.wrap { overflow-x:auto; }
+ol.find { margin:0; padding-left:22px; display:grid; gap:8px; max-width:80ch; }
+ol.find li::marker { font-family:var(--mono); color:var(--mute); }
+.sev { font-family:var(--mono); font-size:11px; padding:1px 7px; border-radius:4px; margin-right:6px; }
+.sev.bad { background:var(--bad); color:#fff; } .sev.warn { background:var(--warn); color:#fff; } .sev.info { background:var(--net); color:var(--ink); }
+</style>
+<main>
+<header>
+  <h1>Mapa do orangepi</h1>
+  <p class="lead">Como o host homelab está de fato hoje, levantado ao vivo em 23/09/2026 com <code>docker ps</code>, <code>network inspect</code>, os composes, o nginx e os túneis. Não é o que os repos dizem; é o que roda.</p>
+  <div class="chips">
+    <span class="chip">Orange Pi 5 Pro · RK3588S · <b>16 GB</b></span>
+    <span class="chip">Ubuntu 22.04 · Docker <b>27.1.1</b></span>
+    <span class="chip"><b>39</b> containers up · 13 stacks compose</span>
+    <span class="chip"><b>10</b> Postgres</span>
+    <span class="chip">SD 105 / 229 GB · <b>70 GB</b> recuperáveis</span>
+    <span class="chip">RAM 1,9 / 15 GB · load <b>~2,8</b></span>
+  </div>
+</header>
+
+<figure>
+<svg viewBox="0 0 1625 720" role="img" aria-label="Mapa de rede do host orangepi: entradas pela internet e pela LAN, a rede proxy-network compartilhada e as redes internas de cada stack">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<rect class="zone" x="60" y="20" width="640" height="150" rx="8"/>
+<text class="zone-t" x="76" y="40" text-anchor="start">INTERNET · sem porta aberta no roteador, só túneis</text>
+<rect class="zone" x="720" y="20" width="885" height="150" rx="8"/>
+<text class="zone-t" x="736" y="40" text-anchor="start">LAN 192.168.15.0/24</text>
+<rect class="pill" x="80" y="62" width="240" height="24" rx="4"/>
+<text class="lbl" x="200.0" y="78.0" text-anchor="middle">radar.koracom.com.br</text>
+<rect class="pill" x="80" y="96" width="240" height="24" rx="4"/>
+<text class="lbl" x="200.0" y="112.0" text-anchor="middle">webhook-curto.koracom.com.br</text>
+<rect class="pill" x="80" y="130" width="240" height="24" rx="4"/>
+<text class="lbl" x="200.0" y="146.0" text-anchor="middle">webhook-kora.koracom.com.br</text>
+<rect class="edge-node" x="440" y="62" width="240" height="48" rx="4"/>
+<text class="lbl" x="560.0" y="83.0" text-anchor="middle">koracom-cloudflared</text>
+<text class="sub" x="560.0" y="95.0" text-anchor="middle">Cloudflare Access · na proxy-network</text>
+<path class="edge" d="M320,74 L440,74" marker-end="url(#arr)"/>
+<text class="cap" x="380" y="68" text-anchor="middle">túnel</text>
+<rect class="edge-node" x="740" y="60" width="845" height="90" rx="4"/>
+<text class="lbl" x="1162.5" y="109.0" text-anchor="middle"></text>
+<text class="lbl" x="1162" y="80" text-anchor="middle">global-nginx  :80 :443 :8443 :9443   (server-infra, mkcert curto.local)</text>
+<text class="sub" x="1162" y="102" text-anchor="middle">curto.local → /cc-radar  /dedoduro  /storage  /wapp-bau  /kora-dl  /sirbcc</text>
+<text class="sub" x="1162" y="120" text-anchor="middle">storage.curto.local · :8443 → nextcloud      dedoduro.curto.local · :9443 → mlcurto-nginx (502)</text>
+<text class="sub" x="1162" y="138" text-anchor="middle">:80 → 301 https://…/cc-radar/</text>
+<path class="edge" d="M1162,150 L1162,200"/>
+<path class="edge" d="M270,200 L1525,200"/>
+<text class="cap" x="1172" y="194" text-anchor="start">proxy_pass pelo nome do container (resolver 127.0.0.11)</text>
+<path class="edge" d="M270,200 L270,270" marker-end="url(#arr)"/>
+<path class="edge" d="M545,200 L545,270" marker-end="url(#arr)"/>
+<path class="edge" d="M835,200 L835,270" marker-end="url(#arr)"/>
+<path class="edge" d="M1082,200 L1082,270" marker-end="url(#arr)"/>
+<path class="edge" d="M1355,200 L1355,270" marker-end="url(#arr)"/>
+<path class="edge" d="M1525,200 L1525,380" marker-end="url(#arr)"/>
+<text class="cap" x="1531" y="300" text-anchor="start">172.17.0.1:3000</text>
+<text class="cap" x="1531" y="314" text-anchor="start">(porta do host)</text>
+<path class="edge hot" d="M560,110 L560,182 L590,182 L590,270" marker-end="url(#arr)"/>
+<rect class="net" x="60" y="230" width="1370" height="100" rx="8"/>
+<text class="net-t" x="76" y="250" text-anchor="start">proxy-network 172.21.0.0/16 · external · quem precisa ser alcançado pelo nginx ou pelo túnel</text>
+<rect class="node" x="70" y="270" width="130" height="40" rx="4"/>
+<text class="lbl" x="135.0" y="294.0" text-anchor="middle">cdl-backend</text>
+<circle class="wt" cx="78" cy="278" r="3.5"/>
+<rect class="node" x="205" y="270" width="130" height="40" rx="4"/>
+<text class="lbl" x="270.0" y="294.0" text-anchor="middle">kdl-backend</text>
+<circle class="wt" cx="213" cy="278" r="3.5"/>
+<rect class="node" x="340" y="270" width="130" height="40" rx="4"/>
+<text class="lbl" x="405.0" y="294.0" text-anchor="middle">bdl-backend</text>
+<circle class="wt" cx="348" cy="278" r="3.5"/>
+<rect class="node" x="505" y="270" width="110" height="40" rx="4"/>
+<text class="lbl" x="560.0" y="294.0" text-anchor="middle" textLength="100" lengthAdjust="spacingAndGlyphs">ccradar-frontend</text>
+<circle class="wt" cx="513" cy="278" r="3.5"/>
+<rect class="node" x="625" y="270" width="110" height="40" rx="4"/>
+<text class="lbl" x="680.0" y="294.0" text-anchor="middle">ccradar-backend</text>
+<circle class="wt" cx="633" cy="278" r="3.5"/>
+<rect class="node" x="770" y="270" width="130" height="40" rx="4"/>
+<text class="lbl" x="835.0" y="294.0" text-anchor="middle">mlcurto-frontend</text>
+<circle class="wt" cx="778" cy="278" r="3.5"/>
+<rect class="node" x="1035" y="270" width="95" height="40" rx="4"/>
+<text class="lbl" x="1082.5" y="294.0" text-anchor="middle">panel-front</text>
+<circle class="wt" cx="1043" cy="278" r="3.5"/>
+<rect class="node" x="1140" y="270" width="95" height="40" rx="4"/>
+<text class="lbl" x="1187.5" y="294.0" text-anchor="middle">panel-api</text>
+<circle class="wt" cx="1148" cy="278" r="3.5"/>
+<rect class="node" x="1290" y="270" width="130" height="40" rx="4"/>
+<text class="lbl" x="1355.0" y="294.0" text-anchor="middle">nextcloud</text>
+<path class="edge" d="M135,310 L135,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M270,310 L270,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M405,310 L405,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M560,310 L560,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M680,310 L680,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M835,310 L835,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M1082,310 L1082,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M1187,310 L1187,380" stroke-dasharray="4 3"/>
+<path class="edge" d="M1355,310 L1355,380" stroke-dasharray="4 3"/>
+<rect class="stack" x="60" y="380" width="420" height="310" rx="8"/>
+<text class="stack-t" x="70" y="398" text-anchor="start">kora-datalake · ghcr.io/hesleylira/kdl-backend ×3</text>
+<text class="cap" x="70" y="412" text-anchor="start">uma rede + um Postgres por empresa</text>
+<text class="cap" x="135" y="434" text-anchor="middle">cdl-internal · Curto</text>
+<rect class="node" x="70" y="442" width="130" height="24" rx="4"/>
+<text class="lbl" x="135.0" y="458.0" text-anchor="middle">cdl-postgres :5434</text>
+<rect class="node" x="70" y="474" width="130" height="24" rx="4"/>
+<text class="lbl" x="135.0" y="490.0" text-anchor="middle">cdl-webhook-gw</text>
+<rect class="edge-node" x="70" y="506" width="130" height="24" rx="4"/>
+<text class="lbl" x="135.0" y="522.0" text-anchor="middle">cdl-cloudflared</text>
+<text class="cap" x="270" y="434" text-anchor="middle">kdl-internal · Kora</text>
+<rect class="node" x="205" y="442" width="130" height="24" rx="4"/>
+<text class="lbl" x="270.0" y="458.0" text-anchor="middle">kdl-postgres :5433</text>
+<rect class="node" x="205" y="474" width="130" height="24" rx="4"/>
+<text class="lbl" x="270.0" y="490.0" text-anchor="middle">kdl-webhook-gw</text>
+<rect class="node" x="205" y="506" width="130" height="24" rx="4"/>
+<text class="lbl" x="270.0" y="522.0" text-anchor="middle">kdl-adminer :8096</text>
+<rect class="warn" x="205" y="538" width="130" height="24" rx="4"/>
+<text class="lbl" x="270.0" y="554.0" text-anchor="middle">kdl-ngrok (legado)</text>
+<rect class="edge-node" x="205" y="570" width="130" height="24" rx="4"/>
+<text class="lbl" x="270.0" y="586.0" text-anchor="middle">kdl-cloudflared</text>
+<text class="cap" x="405" y="434" text-anchor="middle">bdl-internal · Baú</text>
+<rect class="node" x="340" y="442" width="130" height="24" rx="4"/>
+<text class="lbl" x="405.0" y="458.0" text-anchor="middle">bdl-postgres :5436</text>
+<rect class="ghost" x="340" y="474" width="130" height="24" rx="4"/>
+<text class="lbl" x="405.0" y="490.0" text-anchor="middle">sem webhook</text>
+<text class="cap" x="70" y="648" text-anchor="start">*-webhook-gw: só /api/v1/bling/webhook/</text>
+<text class="cap" x="70" y="662" text-anchor="start">e /api/v1/health, resto 404</text>
+<path class="edge hot" d="M80,108 L45,108 L45,518 L70,518" marker-end="url(#arr)"/>
+<path class="edge hot" d="M80,142 L30,142 L30,618 L270,618 L270,594" marker-end="url(#arr)"/>
+<rect class="stack" x="495" y="380" width="250" height="310" rx="8"/>
+<text class="stack-t" x="505" y="398" text-anchor="start">cc-radar · docker-compose.prod.yml</text>
+<text class="cap" x="505" y="412" text-anchor="start">ccradar-internal 172.23.0.0/16</text>
+<rect class="node" x="505" y="442" width="230" height="24" rx="4"/>
+<text class="lbl" x="620.0" y="458.0" text-anchor="middle">ccradar-postgres :5435</text>
+<rect class="node" x="505" y="474" width="230" height="24" rx="4"/>
+<text class="lbl" x="620.0" y="490.0" text-anchor="middle">ccradar-triage-agent (Claude)</text>
+<rect class="node" x="505" y="506" width="230" height="24" rx="4"/>
+<text class="lbl" x="620.0" y="522.0" text-anchor="middle">ccradar-email-agent (Gmail)</text>
+<rect class="node" x="505" y="538" width="230" height="24" rx="4"/>
+<text class="lbl" x="620.0" y="554.0" text-anchor="middle">ccradar-adminer :8091 · avulso</text>
+<rect class="warn" x="505" y="570" width="230" height="24" rx="4"/>
+<text class="lbl" x="620.0" y="586.0" text-anchor="middle">ccradar-dev-pg :5443 · sem volume</text>
+<rect class="bad" x="505" y="602" width="230" height="24" rx="4"/>
+<text class="lbl" x="620.0" y="618.0" text-anchor="middle">cron → ccradar-bot: não existe</text>
+<circle class="wt" cx="513" cy="482" r="3.5"/>
+<circle class="wt" cx="513" cy="514" r="3.5"/>
+<rect class="stack" x="760" y="380" width="250" height="310" rx="8"/>
+<text class="stack-t" x="770" y="398" text-anchor="start">ml_curto · /home/orangepi/ML_Curto</text>
+<text class="cap" x="770" y="412" text-anchor="start">ml_curto_app-network 172.19.0.0/16</text>
+<rect class="node" x="770" y="442" width="230" height="24" rx="4"/>
+<text class="lbl" x="885.0" y="458.0" text-anchor="middle">ml_curto-backend-1 (scheduler)</text>
+<rect class="node" x="770" y="474" width="230" height="24" rx="4"/>
+<text class="lbl" x="885.0" y="490.0" text-anchor="middle">ml_curto-db-1 :5432</text>
+<rect class="node" x="770" y="506" width="230" height="24" rx="4"/>
+<text class="lbl" x="885.0" y="522.0" text-anchor="middle">ml_curto-redis-1 :6379</text>
+<rect class="node" x="770" y="538" width="230" height="24" rx="4"/>
+<text class="lbl" x="885.0" y="554.0" text-anchor="middle">mlcurto-ads-agent (~/.claude)</text>
+<rect class="node" x="770" y="570" width="230" height="24" rx="4"/>
+<text class="lbl" x="885.0" y="586.0" text-anchor="middle">calculadora-api :8001</text>
+<rect class="node" x="770" y="602" width="230" height="24" rx="4"/>
+<text class="lbl" x="885.0" y="618.0" text-anchor="middle">adminer-mlcurto :8090 · avulso</text>
+<circle class="wt" cx="778" cy="450" r="3.5"/>
+<circle class="wt" cx="778" cy="546" r="3.5"/>
+<rect class="stack" x="1025" y="380" width="240" height="310" rx="8"/>
+<text class="stack-t" x="1035" y="398" text-anchor="start">jose  +  wapp-bau</text>
+<text class="cap" x="1035" y="412" text-anchor="start">jose-internal 172.27 · bau 172.26</text>
+<rect class="ghost" x="1035" y="442" width="180" height="32" rx="4"/>
+<text class="lbl" x="1125.0" y="455.0" text-anchor="middle" textLength="170" lengthAdjust="spacingAndGlyphs">jose (bot): profile travado</text>
+<text class="sub" x="1125.0" y="467.0" text-anchor="middle">não roda</text>
+<text class="cap" x="1035" y="500" text-anchor="start">rede bau</text>
+<text class="cap" x="1215" y="500" text-anchor="end">via host :8092</text>
+<rect class="node" x="1035" y="508" width="180" height="24" rx="4"/>
+<text class="lbl" x="1125.0" y="524.0" text-anchor="middle">bau-evolution :8092</text>
+<rect class="node" x="1035" y="540" width="180" height="24" rx="4"/>
+<text class="lbl" x="1125.0" y="556.0" text-anchor="middle">bau-postgres · sem tag</text>
+<rect class="node" x="1035" y="572" width="180" height="24" rx="4"/>
+<text class="lbl" x="1125.0" y="588.0" text-anchor="middle">bau-redis</text>
+<path class="edge faint" d="M1187,380 L1187,428 L1225,428 L1225,520 L1215,520" marker-end="url(#arr)"/>
+<rect class="warn" x="1035" y="620" width="180" height="24" rx="4"/>
+<text class="lbl" x="1125.0" y="636.0" text-anchor="middle" textLength="170" lengthAdjust="spacingAndGlyphs">panel-api monta docker.sock</text>
+<rect class="stack" x="1280" y="380" width="150" height="310" rx="8"/>
+<text class="stack-t" x="1290" y="398" text-anchor="start">nextcloud</text>
+<text class="cap" x="1290" y="412" text-anchor="start">nc-internal 172.22</text>
+<rect class="node" x="1290" y="442" width="130" height="32" rx="4"/>
+<text class="lbl" x="1355.0" y="455.0" text-anchor="middle">nextcloud-db</text>
+<text class="sub" x="1355.0" y="467.0" text-anchor="middle">imagem sem tag</text>
+<rect class="node" x="1290" y="490" width="130" height="24" rx="4"/>
+<text class="lbl" x="1355.0" y="506.0" text-anchor="middle">volume de dados</text>
+<rect class="stack" x="1445" y="380" width="160" height="310" rx="8"/>
+<text class="stack-t" x="1455" y="398" text-anchor="start">sirbcc</text>
+<text class="cap" x="1455" y="412" text-anchor="start">sirbcc_default 172.25</text>
+<rect class="node" x="1455" y="442" width="140" height="24" rx="4"/>
+<text class="lbl" x="1525.0" y="458.0" text-anchor="middle">sirbcc-app :3000</text>
+<rect class="host" x="1455" y="490" width="140" height="32" rx="4"/>
+<text class="lbl" x="1525.0" y="503.0" text-anchor="middle">mongod :27017</text>
+<text class="sub" x="1525.0" y="515.0" text-anchor="middle" textLength="130" lengthAdjust="spacingAndGlyphs">no host, fora do Docker</text>
+<path class="edge" d="M1525,466 L1525,490" marker-end="url(#arr)"/>
+<rect class="bad" x="1455" y="544" width="140" height="32" rx="4"/>
+<text class="lbl" x="1525.0" y="557.0" text-anchor="middle">pm2 sirbcc</text>
+<text class="sub" x="1525.0" y="569.0" text-anchor="middle">crash loop 984k×</text>
+<text class="wt-l" x="60" y="706" text-anchor="start">●</text>
+<text class="cap" x="72" y="706" text-anchor="start">atualizado pelo watchtower-orange (label)   ─ ─  também está na rede interna do stack   </text>
+<text class="cap" x="600" y="706" text-anchor="start">laranja = tráfego vindo da internet   vermelho = quebrado   tracejado cinza = declarado mas não roda</text>
+</svg>
+<figcaption>Cada stack tem sua rede interna; só o container que precisa ser alcançado entra também na <code>proxy-network</code>, onde o <code>global-nginx</code> (LAN) e o <code>koracom-cloudflared</code> (internet) o acham pelo nome. Os webhooks do Bling entram por túneis Cloudflare dedicados que caem num nginx filtro dentro da rede interna do data lake, sem passar pela proxy-network. Bancos e agentes nunca ficam na proxy-network.</figcaption>
+</figure>
+
+<section>
+<h2>Stacks</h2>
+<div class="grid">
+  <div class="card"><h3>server-infra · orange-infra · koracom-tunnel</h3><p>Infra compartilhada.</p><ul><li><code>global-nginx</code> com certificado mkcert <code>curto.local</code>; landing page em <code>/</code> com links pra cc-radar, dedoduro e storage.</li><li><code>watchtower-orange</code> poll 120 s, só containers com o label; hoje adota 12.</li><li><code>koracom-cloudflared</code> expõe o cc-radar em <code>radar.koracom.com.br</code> atrás do Cloudflare Access.</li></ul></div>
+  <div class="card"><h3>cc-radar</h3><p>Radar de e-mails e orçamentos, imagens do ghcr.</p><ul><li>backend, frontend, triage-agent (Claude Code com home própria em <code>~/ccradar-home</code>) e email-agent (service account Gmail).</li><li>Declarados mas parados: proposal-agent email/whatsapp (profile <code>desativado</code>), bling-pdf-agent, ccradar-watchtower.</li><li>Cron do host chama um serviço <code>ccradar-bot</code> que não existe no compose.</li></ul></div>
+  <div class="card"><h3>ml_curto (dedo-duro)</h3><p>Pricing e vigia do Mercado Livre.</p><ul><li>frontend nginx em <code>/dedoduro/</code>, backend com scheduler, Postgres 5432 e Redis 6379 publicados pra dev.</li><li>ads-agent monta o <code>~/.claude</code> do usuário orangepi.</li><li>calculadora-api e adminer pendurados na mesma rede.</li><li>Cópia morta em <code>~/projetos/ML_Curto</code>.</li></ul></div>
+  <div class="card"><h3>kora-datalake</h3><p>Três instâncias da mesma imagem de terceiro, uma por empresa.</p><ul><li>KDL (Kora) 5433: webhook via Cloudflare e ngrok legado, API na LAN em <code>/kora-dl/</code>.</li><li>CDL (Curto) 5434: webhook via Cloudflare dedicado.</li><li>BDL (Baú) 5436: só backend e banco, sem webhook.</li><li>Bind <code>~/kora-datalake/data</code> compartilhado por kdl e cdl.</li></ul></div>
+  <div class="card"><h3>jose + wapp-bau</h3><p>Automação WhatsApp do Baú da Eletrônica.</p><ul><li>wapp-bau: Evolution API 8092, Postgres e Redis em bind mounts.</li><li>jose: painel (api + front) em <code>/wapp-bau/</code>; o painel monta o <code>docker.sock</code> pra controlar o bot.</li><li>O bot <code>jose</code> está no profile <code>travado</code> e não roda.</li></ul></div>
+  <div class="card"><h3>nextcloud · sirbcc · outros</h3><ul><li>Nextcloud em <code>/storage/</code>, <code>storage.curto.local</code> e <code>:8443</code>.</li><li>sirbcc-app na 3000 usa o MongoDB instalado no host; um pm2 tenta subir o mesmo app e falha em loop.</li><li>Avulsos: ciport-postgres 5437, garantia-dev-postgres 5442, ccradar-dev-pg 5443, três adminers.</li><li>mcp-nano-banana parado desde junho.</li><li>Fora do Docker: simulador de medidor do CurtoLab (systemd), adbd, rpcbind.</li></ul></div>
+</div>
+</section>
+
+<section>
+<h2>Portas publicadas no host</h2>
+<div class="wrap"><table>
+<tr><th>Porta</th><th>Quem</th><th>Para quê</th></tr>
+<tr><td class="port">80 443 8443 9443</td><td>global-nginx</td><td>edge LAN</td></tr>
+<tr><td class="port">3000</td><td>sirbcc-app</td><td>app SIRBCC (também em /sirbcc)</td></tr>
+<tr><td class="port">5432</td><td>ml_curto-db-1</td><td>Postgres ML_Curto</td></tr>
+<tr><td class="port">5433 5434 5435 5436</td><td>kdl · cdl · ccradar · bdl postgres</td><td>bancos das stacks</td></tr>
+<tr><td class="port">5437 5442 5443</td><td>ciport · garantia-dev · ccradar-dev postgres</td><td>bancos avulsos de dev</td></tr>
+<tr><td class="port">6379</td><td>ml_curto-redis-1</td><td>Redis ML_Curto</td></tr>
+<tr><td class="port">8001</td><td>calculadora-api</td><td>API interna</td></tr>
+<tr><td class="port">8090 8091 8096</td><td>adminer mlcurto · ccradar · kdl</td><td>UI de banco</td></tr>
+<tr><td class="port">8092</td><td>bau-evolution</td><td>Evolution API</td></tr>
+<tr><td class="port">27017 · 5555 · 111 · 22</td><td>mongod · adbd · rpcbind · sshd</td><td>processos do host, fora do Docker</td></tr>
+</table></div>
+<p class="lead" style="margin-top:8px">Livres pra serviço novo: 8093-8095, 8097-8099; Postgres 5438-5441 e 5444+; Redis 6380+. Preferir não publicar porta e entrar na proxy-network.</p>
+</section>
+
+<section>
+<h2>O que está quebrado ou pede atenção</h2>
+<ol class="find">
+<li><span class="sev bad">502</span><code>dedoduro.curto.local</code> e <code>:9443</code> apontam pra <code>mlcurto-nginx</code>, container hoje se chama <code>mlcurto-frontend</code>. Dois <code>set $upstream_mlcurto</code> em <code>mlcurto.conf</code>.</li>
+<li><span class="sev bad">CPU</span>pm2 <code>sirbcc</code> em crash loop (984 mil restarts) porque a porta 3000 já é do container. É o que segura o load em ~2,8 num host ocioso.</li>
+<li><span class="sev bad">cron</span>bot de orçamentos do cc-radar roda a cada 30 min e falha com <code>no such service: ccradar-bot</code>; log já tem 65 mil linhas.</li>
+<li><span class="sev warn">disco</span>222 imagens (24 em uso) e 13 GB de build cache: cerca de 70 GB recuperáveis com prune.</li>
+<li><span class="sev warn">rede</span>adbd escutando na 5555 pra toda a LAN.</li>
+<li><span class="sev warn">dados</span><code>ccradar-dev-pg</code> sem volume e com <code>restart=no</code>: some no próximo reboot.</li>
+<li><span class="sev warn">segurança</span><code>panel-api</code> monta o <code>docker.sock</code> e está exposto no nginx: equivale a root no host.</li>
+<li><span class="sev info">legado</span><code>kdl-ngrok</code> ainda roda apesar do túnel Cloudflare já cobrir o mesmo gateway.</li>
+<li><span class="sev info">imagem</span><code>nextcloud-db</code> e <code>bau-postgres</code> rodam uma imagem sem tag; um pull do compose troca a versão sem avisar.</li>
+<li><span class="sev info">padrão</span>o ads-agent usa o <code>~/.claude</code> do usuário; o triage-agent tem home própria. Vale unificar.</li>
+<li><span class="sev info">docs</span>o compose do host do cc-radar ainda declara watchtower, bling-pdf-agent e proposal-agents; host e repo divergem.</li>
+</ol>
+</section>
+</main>

@@ -57,7 +57,7 @@ Exemplos: Ecosnap (`~/Documentos/projetos/Kicad/Ecosnap/kicad/`, roteado 10–20
 | `centro_pad.py placa` / `centro_pad_plano.py placa dir` | pontas fora do centro do pad / plano de correção por folha | fim de bloco, Fase 6 |
 | `teste_copia.py placa lote.json [--area]` | aplica o lote numa cópia, DRC só do novo + cantos | antes de lote grande |
 | `render_semgnd.py placa saida.png [--area] [--px-mm 16]` | imagem com a malha GND oculta (F vermelho, B azul, In2 laranja) | fim de cada bloco |
-| `ensaio_place.py` / `satelites.py` / `opt_place.py` | ensaio de posição, satélites, otimização numa cópia | Fase 1 |
+| `satelites.py` | satélites fora do limite (só confere; `opt_place.py`/`ensaio_place.py` NÃO decidem placement — 29/10) | Fase 1 |
 | `add3d.py placa saida` | recoloca o 3D que o move do MCP apaga (pcbnew fechado) | Fase 6 |
 | `pinswap.py` | troca de GPIO (volta ao esquemático) | após Fase 2 |
 

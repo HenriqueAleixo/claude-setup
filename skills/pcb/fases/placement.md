@@ -1,11 +1,24 @@
 # Placement — Fases 1 e 2
 
 ## Fase 1 — Placement de cada bloco (fora da placa, se preciso)
+- **O placement é MEU, peça a peça e bloco a bloco, ao vivo pelo MCP** (29/10, controladora-s3: "mas pq script??? eu ja
+  nao falei que eh voce que tem que fazer?"). Nada de otimizador/recozimento/força dirigida decidindo posição — nem
+  numa cópia. Eu escolho a posição, movo pelo MCP, olho a imagem, confiro sobreposição e ajusto ("pirulitar" até ficar
+  bom). Script só mede/confere (sobreposição, satélites, render); `opt_place.py`/`ensaio_place.py` não decidem.
+  "script nao toma decisoes... e eu preciso que tu tome decisoes... se precisar trocar um pino pra ficar melhor sem
+  cruzar tanto as trilhas tu tem que tomar essa decisao": troca de GPIO/pino de expansor/ordem de conector é decisão
+  minha durante o placement — decido, anoto (de → para e porquê) e mando para a sessão do esquemático aplicar; F8 depois.
 - Bloco = folha do esquemático (`fp.GetSheetname()`). Monte o bloco **compacto e completo** antes de pensar onde ele
   fica: CI no centro, satélites em volta (tabela abaixo), cadeia de sinal em linha reta.
 - Bloco novo ou muito mexido → montar numa **área livre fora do contorno** (ex. abaixo da placa), mostrar a ele, e só
   então levar para dentro. Ensaiar posições numa cópia (`ensaio_place.py`) e checar sobreposição antes do MCP.
 - Folga = courtyard (sem folga extra); grid 0,25–0,5 mm; tudo no topo salvo decisão dele; referências ocultas ao fim.
+- **Por folha, fora da placa, o mais compacto possível, origem no grid de 0,25 mm** (28/10, controladora-s3: "faz o
+  placement por folha fora da placa" / "vamos posicionar os componentes no gride de 0,2500 mm" / "fazer por folha e
+  deixar o mais compacto possivel"). Compactar puxando cada passivo para o PINO/peça com que divide rede de sinal
+  (nunca para a origem da âncora: os satélites saem do pino), em passos de 0,25 com 0,25 de folga; ensaio na cópia.
+- Peça que ele posicionou à mão (ex. MCU, USB e HDR601 da controladora, 28/10) fica onde está: comparar o salvo com o
+  backup antes de cada lote e perguntar; os satélites seguem a peça dele.
 - **Pense na saída do pad já no placement**: passivo ligado a um pino fica **no eixo do pino** sempre que der, para a
   trilha sair do centro de um e entrar reta no centro do outro (regra do centro do pad, `roteamento.md`). Peça fora
   do eixo obriga o desvio de 45° + 45°; se o desvio ficaria com < 0,5 mm reto antes do pad, mova a peça.

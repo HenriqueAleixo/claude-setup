@@ -82,6 +82,13 @@ novo nasce de 2–3 referências (application circuit do datasheet, app note TI/
   precisar). Texto nenhum sobreposto (ref, valor, label).
 - Símbolo da LCSC que obriga a cruzar fio → símbolo de projeto com a mesma numeração (`custom_syms`).
 - Canais repetidos com passo folgado (ex. entradas digitais: 25,4 mm entre canais).
+- (22/10, A16-S3: "acerta essas linhas e nomes pra ficar dentro da folha") **Tudo dentro da moldura** do KiCad
+  (borda 10 mm + faixa de letras/números): bloco a ≥ 15,24 mm da borda do papel (o `block()` do kit já recolhe),
+  nota/label/texto a ≥ 2,54 mm dentro do bloco. O `check_overlap.py` acusa "× moldura".
+- (22/10, A16-S3: "nomes sobrepostos em cima dos componentes") **Ref e valor nunca em cima do próprio corpo** (borda
+  do CI, setas do LED, corpo do MOSFET/opto/botão/conector) — só o valor do resistor fica dentro dele; CI grande com
+  miolo vazio (W5500) pode ter ref/valor no centro. O `check_overlap.py` acusa "× próprio corpo". Leque com LED no
+  pino: passo 10,16 mm.
 
 ## 5. Peças
 - Só das libs pessoais (`~/.local/share/kicad/10.0/3rdparty/kicad-libs`: LCSC, JLCPCB-*); nunca `Device:*` nem

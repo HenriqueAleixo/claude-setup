@@ -25,35 +25,40 @@ Servidor caseiro do Lucas / TrueIoT, onde rodam aplicações pessoais e de produ
 - Docker Compose: `v2.29.1`
 - Swap: 8 GB
 
-## Stacks já em produção (NÃO derrubar)
-- `global-nginx` — reverse proxy compartilhado (escuta 80/443/8443/9443)
-- `nextcloud` + `nextcloud-db` (postgres:16-alpine) — Nextcloud pessoal
-- `ccradar` — `ccradar-backend` + `ccradar-frontend` + `ccradar-email-agent` + `ccradar-proposal-agent` — radar de e-mails (atrás do nginx)
-- `ml_curto` — `ml_curto-backend-1` + `ml_curto-db-1` (5432) + `ml_curto-redis-1` (6379) + `mlcurto-nginx` + `adminer-mlcurto` (8090) — projeto ML Curto
-- `wapp-bau` — `jose` (bot, `192.168.15.200:9001`) + `panel-api` + `panel-front` + `bau-evolution` (8092) + `bau-postgres` + `bau-redis` — automação WhatsApp
-- `kdl` — `kdl-backend` + `kdl-postgres` (`127.0.0.1:5433`) + `kdl-adminer` (8096) — stack de terceiro (imagem `ghcr.io/hesleylira/kdl-backend`), subiu 2026-06-05
-- `sirbcc-app` (3000) — aplicação SIRBCC
-- `calculadora-api` (8001) — calculadora interna
-- `mcp-nano-banana` — servidor MCP
-- `watchtower-orange` — auto-update label-scoped de todos os projetos (ver memória própria)
-- Portainer (`9443`) — UI de gestão de containers
+## Stacks em produção (levantado em 2026-09-23 — detalhe em [ARCHITECTURE.md](ARCHITECTURE.md))
+- `server-infra` → `global-nginx` — reverse proxy compartilhado (80/443/8443/9443), rede `proxy-network`
+- `orange-infra` → `watchtower-orange` — auto-update label-scoped de todos os projetos
+- `koracom-tunnel` → `koracom-cloudflared` — `radar.koracom.com.br` → ccradar-frontend (Cloudflare Access)
+- `cc-radar` → `ccradar-postgres` (5435) + `ccradar-backend` + `ccradar-frontend` + `ccradar-triage-agent` + `ccradar-email-agent` (+ `ccradar-adminer` 8091 avulso)
+- `ml_curto` → `mlcurto-frontend` + `ml_curto-backend-1` + `ml_curto-db-1` (5432) + `ml_curto-redis-1` (6379) + `mlcurto-ads-agent` (+ `adminer-mlcurto` 8090 e `calculadora-api` 8001 na mesma rede)
+- `kora-datalake` → 3 instâncias de `ghcr.io/hesleylira/kdl-backend`: **kdl** (Kora, pg 5433, webhook via cloudflared + ngrok legado, `/kora-dl/` no nginx), **cdl** (Curto, pg 5434, webhook via cloudflared), **bdl** (Baú, pg 5436, sem webhook); `kdl-adminer` 8096 avulso
+- `wapp-bau` → `bau-evolution` (8092) + `bau-postgres` + `bau-redis` — Evolution API (WhatsApp)
+- `jose` → `panel-api` + `panel-front` (`/wapp-bau/` no nginx); o bot `jose` está no profile `travado` e **não roda**
+- `nextcloud` → `nextcloud` + `nextcloud-db` — `/storage/`, `storage.curto.local`, `:8443`
+- `sirbcc` → `sirbcc-app` (3000), usa **mongod do host** (27017)
+- `calculadora-api` (8001) — build local
+- `mcp-nano-banana` — parado (Exited) desde jun/2026
+- Avulsos: `ciport-postgres` (5437), `garantia-dev-postgres` (5442), `ccradar-dev-pg` (5443, sem volume)
+- Fora do Docker: `mongod`, `pm2` (sirbcc, quebrado), `curtolab-energy-simulator.service`, cron do bot cc-radar, `adbd`
+- **Não existe Portainer** no host.
 
 ## Portas já ocupadas no host
-`22, 80, 111, 443, 3000, 5432, 5433, 5555, 6379, 8000, 8001, 8090, 8092, 8096, 8443, 8888, 9001, 9443, 27017`
+`22, 80, 111, 443, 3000, 5037, 5432, 5433, 5434, 5435, 5436, 5437, 5442, 5443, 5555, 6379, 8001, 8090, 8091, 8092, 8096, 8443, 9443, 27017`
 
 → Antes de subir um serviço novo, escolher porta fora dessa lista.
 
 ## Portas livres recomendadas para novos serviços
-- HTTP de novos apps: `8091, 8093-8095, 8097-8099` (8090/8092/8096 já tomados)
-- Postgres adicional: `5434+`
+- HTTP de novos apps: `8093-8095, 8097-8099`
+- Postgres adicional: `5438-5441, 5444+`
 - Redis adicional: `6380+`
 - **Preferência**: não expor portas no host. Usar docker network interna e expor publicamente
-  apenas via reverse proxy do container `global-nginx`.
+  apenas via reverse proxy do container `global-nginx` (rede `proxy-network`).
 
 ## Convenção de deploy (padrão `cc-radar`)
 1. Desenvolver localmente em `~/Documentos/projetos/<nome>/`
 2. `git push`
-3. No orangepi: `cd ~/<nome> && git pull && docker compose up -d --build`
+3. Projetos com imagem no ghcr (cc-radar, ML_Curto, jose, kora-datalake): CI publica → `watchtower-orange` puxa em até 120 s (basta o label `com.centurylinklabs.watchtower.enable=true`)
+4. Projetos de build local: no orangepi `cd ~/<nome> && git pull && docker compose up -d --build`
 
 ## Observações
 - Postgres roda em cartão SD — ok para volume baixo/médio. Para uso intensivo de escrita,
