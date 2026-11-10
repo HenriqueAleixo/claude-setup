@@ -49,7 +49,7 @@ Exemplos: Ecosnap (`~/Documentos/projetos/Kicad/Ecosnap/kicad/`, roteado 10–20
 5. **Ligações entre blocos, bornes, distribuição** → `fases/roteamento.md`.
 6. **Fechamento** (DRC, cantos, centro do pad, refs, 3D, imagem, commit) → `fases/fechamento.md`.
 
-## 3. Kit (`kicad-ia-tools/pcb/`, `/usr/bin/python3.12` quando importa pcbnew; tudo só lê)
+## 3. Kit (`kicad-ia-tools/pcb/`, `/usr/bin/python3` quando importa pcbnew; tudo só lê)
 | script | faz | quando |
 |---|---|---|
 | `drc_resumo.py placa [--area] [--novo base.json]` | DRC filtrado, violações novas, ligações faltando por rede | toda fase |
